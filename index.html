@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MorseApp</title>
+    <style>
+        /* Variables de Diseño: Estilo Mate / Plástico / Marfil */
+        :root {
+            --bg-body: #f4f4f0;       /* Gris muy pálido */
+            --bg-card: #fdfbf7;       /* Marfil crema */
+            --bg-input: #ffffff;      /* Blanco puro para áreas de texto */
+            --text-main: #2c2c2c;     /* Negro suave */
+            --text-sub: #555555;
+            --border-color: #dcdcdc;
+            --accent-color: #e0e0e0;
+            --shadow-soft: 0 4px 6px rgba(0,0,0,0.05);
+            --shadow-plastic: inset 1px 1px 2px rgba(255,255,255,0.9), inset -1px -1px 2px rgba(0,0,0,0.05);
+            --shadow-button: 2px 2px 4px rgba(0,0,0,0.1), 1px 1px 1px rgba(255,255,255,1);
+            --highlight: #f0e6d2;     /* Tono arena para selección */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            /* Negrita solicitada */
+            font-weight: bold; 
+        }
+
+        /* Contenedor Principal */
+        .app-container {
+            background-color: var(--bg-card);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 30px;
+            border: 1px solid #ffffff;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 1px;
+            color: #333;
+        }
+
+        /* Secciones */
+        .app-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #444;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        /* Inputs y Textareas */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold; 
+            font-size: 1rem;
+            color: var(--text-sub);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-input);
+            box-shadow: var(--shadow-plastic); /* Efecto hundido */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            color: var(--text-main);
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            font-weight: bold; 
+        }
+
+        textarea:focus {
+            border-color: #bbb;
+        }
+
+        /* Área de visualización de salida */
+        .output-display {
+            width: 100%;
+            min-height: 60px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            word-wrap: break-word;
+            margin-top: 10px;
+            color: var(--text-main);
+            font-weight: bold; 
+        }
+        
+        /* Estilo para Salida de Texto Normal */
+        .output-text {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            font-size: 20px;
+            letter-spacing: normal;
+            line-height: 1.5;
+        }
+
+        /* Controles y Botones */
+        .controls-wrapper {
+            background-color: rgba(0,0,0,0.02);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #eee;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .row:last-child { margin-bottom: 0; }
+
+        button.action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-weight: bold; 
+            cursor: pointer;
+            box-shadow: var(--shadow-button);
+            transition: transform 0.1s, box-shadow 0.1s;
+            min-width: 120px;
+            font-size: 1rem;
+        }
+
+        button.action-btn:hover {
+            background: #fff;
+            border-color: #aaa;
+        }
+
+        button.action-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        button.action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #eee;
+            transform: none;
+        }
+
+        button.full-width {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Radio buttons */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        input[type="radio"] {
+            accent-color: #555;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Inputs de tiempo */
+        .time-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .time-inputs input {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: var(--bg-input);
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+        
+        input[type="range"] {
+            flex-grow: 1;
+            accent-color: #555;
+            cursor: pointer;
+            height: 6px;
+        }
+
+        /* Clase para resaltar símbolo actual */
+        .current-symbol {
+            background-color: var(--highlight);
+            border-radius: 3px;
+            padding: 0 3px;
+            color: #000;
+            transition: background-color 0.1s;
+        }
+
+        /* Feedback visual */
+        #status-message {
+            text-align: center;
+            height: 24px;
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Separador entre secciones */
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+            margin: 40px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>MorseApp</h1>
+        </header>
+
+        <!-- SECCIÓN 1: TEXTO A MORSE -->
+        <div class="app-section" id="section-text2morse">
+            <span class="section-title">1. De Texto a Código Morse</span>
+            
+            <label for="textInput">Escribe tu texto:</label>
+            <textarea id="textInput" placeholder="Escribe algo aquí... (Ej: HOLA MUNDO)"></textarea>
+            
+            <label>Salida Visual (Código Morse):</label>
+            <div id="morseOutput" class="output-display" aria-live="polite">
+                ...
+            </div>
+
+            <div class="controls-wrapper">
+                <div id="status-message"></div>
+
+                <div class="row">
+                    <button id="btnPlay" class="action-btn">Reproducir</button>
+                    <button id="btnStop" class="action-btn" disabled>Detener</button>
+                    
+                    <div class="slider-container">
+                        <label for="speedRange" style="margin:0; white-space:nowrap;">Velocidad:</label>
+                        <input type="range" id="speedRange" min="5" max="40" value="20">
+                        <span id="speedValue">20 WPM</span>
+                    </div>
+                </div>
+
+                <div class="row" style="background: #eee; padding: 10px; border-radius: 6px;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #444;">Modo de Repetición:</span>
+                    
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="repeatMode" value="once" checked>
+                            Una vez
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="repeatMode" value="loop">
+                            Infinito
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="repeatMode" value="time">
+                            Por Tiempo:
+                        </label>
+                        
+                        <div class="time-inputs" id="timeDurationInputs" style="opacity: 0.5; pointer-events: none;">
+                            <input type="number" id="repeatMin" min="0" value="0" placeholder="Min">
+                            <span>m</span>
+                            <input type="number" id="repeatSec" min="0" value="10" placeholder="Seg">
+                            <span>s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- SECCIÓN 2: MORSE A TEXTO -->
+        <div class="app-section" id="section-morse2text">
+            <span class="section-title">2. De Código Morse a Texto</span>
+            
+            <label for="morseInput">Escribe código Morse (usa puntos ., rayas - y espacios):</label>
+            <textarea id="morseInput" placeholder="Ej: .... --- .-.. .- / -- ..- -. -.. ---"></textarea>
+            
+            <button id="btnTranslate" class="action-btn full-width">Traducir a Texto</button>
+            
+            <label>Traducción:</label>
+            <div id="textOutput" class="output-display output-text">
+                (Aquí aparecerá el texto traducido)
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * Diccionario Morse
+         */
+        const MORSE_DICT = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
+            '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
+            'Ñ': '--.--', 
+            ' ': '/' 
+        };
+
+        /**
+         * Elementos DOM - Texto a Morse
+         */
+        const textInput = document.getElementById('textInput');
+        const morseOutput = document.getElementById('morseOutput');
+        const btnPlay = document.getElementById('btnPlay');
+        const btnStop = document.getElementById('btnStop');
+        const speedRange = document.getElementById('speedRange');
+        const speedValue = document.getElementById('speedValue');
+        const statusMsg = document.getElementById('status-message');
+        const repeatRadios = document.getElementsByName('repeatMode');
+        const timeDurationInputs = document.getElementById('timeDurationInputs');
+        const repeatMin = document.getElementById('repeatMin');
+        const repeatSec = document.getElementById('repeatSec');
+
+        /**
+         * Elementos DOM - Morse a Texto
+         */
+        const morseInput = document.getElementById('morseInput');
+        const textOutput = document.getElementById('textOutput');
+        const btnTranslate = document.getElementById('btnTranslate');
+
+        /**
+         * Variables de Audio y Estado
+         */
+        let audioCtx = null;
+        let isPlaying = false;
+        let shouldStop = false;
+        let currentOscillator = null;
+
+        /**
+         * Lógica Interfaz: Radio Buttons Repetición
+         */
+        repeatRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'time') {
+                    timeDurationInputs.style.opacity = '1';
+                    timeDurationInputs.style.pointerEvents = 'auto';
+                } else {
+                    timeDurationInputs.style.opacity = '0.5';
+                    timeDurationInputs.style.pointerEvents = 'none';
+                }
+            });
+        });
+
+        speedRange.addEventListener('input', (e) => {
+            speedValue.textContent = e.target.value + " WPM";
+        });
+
+        /**
+         * Lógica: Texto a Secuencia Morse
+         */
+        function getMorseSequence(text) {
+            const sequence = [];
+            let cleanText = text.toUpperCase().replace(/Ñ/g, 'Ñ'); 
+            cleanText = cleanText.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            for (let char of cleanText) {
+                if (char === ' ' || char === '\n') {
+                    sequence.push({ char: ' ', code: '/', type: 'space' });
+                } else if (MORSE_DICT[char]) {
+                    sequence.push({ char: char, code: MORSE_DICT[char], type: 'char' });
+                }
+            }
+            return sequence;
+        }
+
+        function renderMorseVisual(sequence) {
+            morseOutput.innerHTML = '';
+            if (sequence.length === 0) {
+                morseOutput.innerHTML = '<span style="opacity:0.5">...</span>';
+                return;
+            }
+
+            sequence.forEach((item, index) => {
+                const span = document.createElement('span');
+                span.textContent = item.code + ' ';
+                span.id = `sym-${index}`;
+                if (item.code === '/') span.style.marginRight = '1.5em';
+                morseOutput.appendChild(span);
+            });
+        }
+
+        /**
+         * Lógica: Reproducción de Audio
+         */
+        async function playMorse() {
+            const text = textInput.value;
+            if (!text.trim()) {
+                showStatus("Escribe algo para reproducir.");
+                return;
+            }
+
+            isPlaying = true;
+            shouldStop = false;
+            
+            btnPlay.disabled = true;
+            btnStop.disabled = false;
+            textInput.disabled = true;
+            btnStop.textContent = "Detener";
+
+            const wpm = parseInt(speedRange.value);
+            const dotDuration = 1200 / wpm; 
+            const dashDuration = dotDuration * 3;
+            const intraCharGap = dotDuration; 
+            const interCharGap = dotDuration * 3;
+            const wordGap = dotDuration * 7;
+
+            let endTime = 0;
+            const selectedMode = Array.from(repeatRadios).find(r => r.checked).value;
+            
+            if (selectedMode === 'time') {
+                const mins = parseInt(repeatMin.value) || 0;
+                const secs = parseInt(repeatSec.value) || 0;
+                if (mins > 0 || secs > 0) {
+                    endTime = Date.now() + (mins * 60000) + (secs * 1000);
+                    showStatus(`Reproduciendo por ${mins}m ${secs}s...`);
+                }
+            } else if (selectedMode === 'loop') {
+                showStatus("Reproduciendo en bucle infinito...");
+            } else {
+                showStatus("Reproduciendo una vez...");
+            }
+
+            const sequence = getMorseSequence(text);
+            renderMorseVisual(sequence);
+
+            do {
+                for (let i = 0; i < sequence.length; i++) {
+                    if (shouldStop) break;
+                    if (endTime > 0 && Date.now() > endTime) { shouldStop = true; break; }
+
+                    highlightSymbol(i);
+                    const item = sequence[i];
+
+                    if (item.type === 'space') {
+                        await wait(wordGap);
+                    } else {
+                        for (let symbol of item.code) {
+                            if (shouldStop) break;
+                            if (symbol === '.') {
+                                playTone(dotDuration);
+                                await wait(dotDuration + intraCharGap); 
+                            } else if (symbol === '-') {
+                                playTone(dashDuration);
+                                await wait(dashDuration + intraCharGap); 
+                            }
+                        }
+                        await wait(interCharGap - intraCharGap); 
+                    }
+                }
+                document.querySelectorAll('.current-symbol').forEach(el => el.classList.remove('current-symbol'));
+
+                if (!shouldStop && selectedMode === 'loop') {
+                    await wait(1000); 
+                } else if (!shouldStop && endTime > 0 && Date.now() < endTime) {
+                    await wait(1000); 
+                }
+
+            } while (!shouldStop && (selectedMode === 'loop' || (endTime > 0 && Date.now() < endTime)));
+
+            isPlaying = false;
+            btnPlay.disabled = false;
+            btnStop.disabled = true;
+            textInput.disabled = false;
+            btnStop.textContent = "Detener";
+            showStatus("Reproducción finalizada.");
+        }
+
+        function stopMorse() {
+            shouldStop = true;
+            if (currentOscillator) {
+                try {
+                    currentOscillator.stop();
+                    currentOscillator.disconnect();
+                } catch (e) { }
+                currentOscillator = null;
+            }
+            showStatus("Detenido.");
+        }
+
+        function playTone(duration) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            osc.type = 'sine'; 
+            osc.frequency.value = 600; 
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.5, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            osc.start(now);
+            osc.stop(now + duration);
+            currentOscillator = osc;
+            osc.onended = () => { currentOscillator = null; };
+        }
+
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        function highlightSymbol(index) {
+            document.querySelectorAll('.current-symbol').forEach(el => el.classList.remove('current-symbol'));
+            const el = document.getElementById(`sym-${index}`);
+            if (el) {
+                el.classList.add('current-symbol');
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function showStatus(msg) {
+            statusMsg.textContent = msg;
+            setTimeout(() => { if(!isPlaying) statusMsg.textContent = ''; }, 3000);
+        }
+
+        /**
+         * Lógica: Traducción Morse a Texto
+         */
+        // Crear diccionario invertido (Clave: Código Morse -> Valor: Letra)
+        const REVERSE_MORSE_DICT = Object.fromEntries(
+            Object.entries(MORSE_DICT).map(a => a.reverse())
+        );
+
+        function translateMorseToText() {
+            const rawInput = morseInput.value;
+            if (!rawInput.trim()) {
+                textOutput.textContent = 'Escribe código morse arriba y pulsa "Traducir".';
+                textOutput.style.color = '#888';
+                return;
+            }
+
+            // 1. Normalizar: Reemplazar '/' por un token especial para "Espacio de Palabra"
+            // Usamos un token improbable para evitar conflictos
+            const normalizedInput = rawInput.replace(/\//g, ' WORD_SPLIT ');
+
+            // 2. Dividir por espacios (uno o más) para obtener los códigos de letras
+            const tokens = normalizedInput.trim().split(/\s+/);
+
+            let result = '';
+            let hasValidCode = false;
+
+            tokens.forEach(token => {
+                if (token === 'WORD_SPLIT') {
+                    result += ' '; // Agregar espacio real
+                    hasValidCode = true;
+                } else if (REVERSE_MORSE_DICT[token]) {
+                    result += REVERSE_MORSE_DICT[token];
+                    hasValidCode = true;
+                } else if (token !== '') {
+                    // Si el token no está en el diccionario y no está vacío (errores de tipeo)
+                    // Opcional: result += '?';
+                }
+            });
+
+            if (!hasValidCode && tokens.length === 0) {
+                textOutput.textContent = "No se detectaron códigos válidos.";
+                textOutput.style.color = '#888';
+            } else {
+                textOutput.textContent = result;
+                textOutput.style.color = 'var(--text-main)';
+                // Efecto flash visual para confirmar acción
+                textOutput.style.backgroundColor = "#fff";
+                setTimeout(() => { textOutput.style.backgroundColor = "#f9f9f9"; }, 200);
+            }
+        }
+
+        // Event Listeners
+        btnPlay.addEventListener('click', playMorse);
+        btnStop.addEventListener('click', stopMorse);
+        btnTranslate.addEventListener('click', translateMorseToText);
+
+        textInput.addEventListener('input', () => {
+            if (!isPlaying) {
+                const seq = getMorseSequence(textInput.value);
+                renderMorseVisual(seq);
+            }
+        });
+
+    </script>
+</body>
+</html>
